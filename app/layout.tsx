@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'AI App',
+  title: 'AI Guides',
 }
 
 export default function RootLayout({
