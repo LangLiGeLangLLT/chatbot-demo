@@ -52,6 +52,7 @@
     "next": "16.0.1",
     "next-themes": "^0.4.6",
     "ollama-ai-provider-v2": "^1.5.3",
+    "qwen-ai-provider-v5": "^1.0.1",
     "react": "19.2.0",
     "react-day-picker": "^9.11.1",
     "react-dom": "19.2.0",
