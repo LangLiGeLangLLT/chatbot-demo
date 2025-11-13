@@ -1,9 +1,11 @@
 import { streamText, UIMessage, convertToModelMessages } from 'ai'
-import { createQwen } from 'qwen-ai-provider-v5'
+import { createOpenAICompatible } from '@ai-sdk/openai-compatible'
 
-const qwen = createQwen({
+const qwen = createOpenAICompatible({
+  name: 'qwen',
   apiKey: process.env.DASHSCOPE_API_KEY,
   baseURL: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+  includeUsage: true,
 })
 
 // Allow streaming responses up to 30 seconds
@@ -16,7 +18,7 @@ export async function POST(req: Request) {
     messages: UIMessage[]
   } = await req.json()
   const result = streamText({
-    model: qwen('qwen-max'),
+    model: qwen('qwen3-max'),
     messages: convertToModelMessages(messages),
     system:
       'You are a helpful assistant that can answer questions and help with tasks',
