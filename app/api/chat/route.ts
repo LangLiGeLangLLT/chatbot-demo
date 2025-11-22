@@ -14,6 +14,7 @@ export async function POST(req: Request) {
     model: qwen('qwen3-omni-flash'),
     messages: convertToModelMessages(messages),
     system: `You are a helpful assistant that can answer questions and help with tasks`,
+    tools: {},
   })
   // send sources and reasoning back to the client
   return result.toUIMessageStreamResponse({

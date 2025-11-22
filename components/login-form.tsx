@@ -1,3 +1,5 @@
+'use client'
+
 import { GalleryVerticalEnd } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
@@ -10,14 +12,24 @@ import {
   FieldSeparator,
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import { UIText } from '@/types'
+import { useRouter } from 'next/navigation'
+import { useForm } from 'react-hook-form'
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<'div'>) {
+  const router = useRouter()
+  const { handleSubmit } = useForm({})
+
+  function onSubmit() {
+    router.push('/dashboard')
+  }
+
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
-      <form>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <FieldGroup>
           <div className="flex flex-col items-center gap-2 text-center">
             <a
@@ -27,21 +39,16 @@ export function LoginForm({
               <div className="flex size-8 items-center justify-center rounded-md">
                 <GalleryVerticalEnd className="size-6" />
               </div>
-              <span className="sr-only">Acme Inc.</span>
+              <span className="sr-only">{UIText.AppName}</span>
             </a>
-            <h1 className="text-xl font-bold">Welcome to Acme Inc.</h1>
+            <h1 className="text-xl font-bold">Welcome to {UIText.AppName}</h1>
             <FieldDescription>
               Don&apos;t have an account? <a href="#">Sign up</a>
             </FieldDescription>
           </div>
           <Field>
             <FieldLabel htmlFor="email">Email</FieldLabel>
-            <Input
-              id="email"
-              type="email"
-              placeholder="m@example.com"
-              required
-            />
+            <Input id="email" placeholder="m@example.com" />
           </Field>
           <Field>
             <Button type="submit">Login</Button>

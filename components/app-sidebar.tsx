@@ -27,10 +27,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
+import { UIText } from '@/types'
 
 const data = {
   user: {
-    name: 'shadcn',
+    name: 'SuperAdmin',
     email: 'm@example.com',
     avatar: '',
   },
@@ -164,7 +165,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <Command className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">Acme Inc</span>
+                  <span className="truncate font-medium">{UIText.AppName}</span>
                   <span className="truncate text-xs">Enterprise</span>
                 </div>
               </a>
