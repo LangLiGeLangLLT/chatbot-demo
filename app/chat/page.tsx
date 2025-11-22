@@ -123,17 +123,6 @@ const ChatBotDemo = () => {
                   )}
                 {message.parts.map((part, i) => {
                   switch (part.type) {
-                    case 'tool-addResource':
-                    case 'tool-getInformation':
-                      return (
-                        <div key={`${message.id}-${i}`}>
-                          call{part.state === 'output-available' ? 'ed' : 'ing'}{' '}
-                          tool: {part.type}
-                          <pre className="my-4 bg-zinc-100 p-2 rounded-sm">
-                            {JSON.stringify(part.input, null, 2)}
-                          </pre>
-                        </div>
-                      )
                     case 'text':
                       return (
                         <Fragment key={`${message.id}-${i}`}>
