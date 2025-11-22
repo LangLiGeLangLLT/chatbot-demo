@@ -69,6 +69,7 @@ import {
   useRef,
   useState,
 } from "react";
+
 // ============================================================================
 // Provider Context & Types
 // ============================================================================
@@ -412,8 +413,8 @@ export const PromptInputActionAddAttachments = ({
 };
 
 export type PromptInputMessage = {
-  text?: string;
-  files?: FileUIPart[];
+  text: string;
+  files: FileUIPart[];
 };
 
 export type PromptInputProps = Omit<
@@ -753,7 +754,7 @@ export const PromptInput = ({
         onSubmit={handleSubmit}
         {...props}
       >
-        <InputGroup>{children}</InputGroup>
+        <InputGroup className="overflow-hidden">{children}</InputGroup>
       </form>
     </>
   );
@@ -1036,6 +1037,7 @@ interface SpeechRecognition extends EventTarget {
 
 interface SpeechRecognitionEvent extends Event {
   results: SpeechRecognitionResultList;
+  resultIndex: number;
 }
 
 type SpeechRecognitionResultList = {
@@ -1114,9 +1116,8 @@ export const PromptInputSpeechButton = ({
       speechRecognition.onresult = (event) => {
         let finalTranscript = "";
 
-        const results = Array.from(event.results);
-
-        for (const result of results) {
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const result = event.results[i];
           if (result.isFinal) {
             finalTranscript += result[0]?.transcript ?? "";
           }

@@ -9,6 +9,8 @@ import {
   Message,
   MessageAction,
   MessageActions,
+  MessageAttachment,
+  MessageAttachments,
   MessageContent,
   MessageResponse,
 } from '@/components/ai-elements/message'
@@ -49,6 +51,7 @@ import {
   ReasoningTrigger,
 } from '@/components/ai-elements/reasoning'
 import { Loader } from '@/components/ai-elements/loader'
+import { DefaultChatTransport } from 'ai'
 
 const models = [
   {
@@ -65,7 +68,11 @@ const ChatBotDemo = () => {
   const [input, setInput] = useState('')
   const [model, setModel] = useState<string>(models[0].value)
   const [webSearch, setWebSearch] = useState(false)
-  const { messages, sendMessage, status, regenerate } = useChat()
+  const { messages, sendMessage, status, regenerate } = useChat({
+    transport: new DefaultChatTransport({
+      api: '/api/chat',
+    }),
+  })
 
   const handleSubmit = (message: PromptInputMessage) => {
     const hasText = Boolean(message.text)
@@ -97,6 +104,24 @@ const ChatBotDemo = () => {
           <ConversationContent>
             {messages.map((message) => (
               <div key={message.id}>
+                {message.role === 'user' &&
+                  message.parts.filter((part) => part.type === 'file').length >
+                    0 && (
+                    <MessageAttachments className="mb-2">
+                      {message.parts.map((part, i) => {
+                        if (
+                          part.type === 'file' &&
+                          part.mediaType.startsWith('image/')
+                        ) {
+                          return (
+                            <Fragment key={`${message.id}-${i}`}>
+                              <MessageAttachment data={part} />
+                            </Fragment>
+                          )
+                        }
+                      })}
+                    </MessageAttachments>
+                  )}
                 {message.role === 'assistant' &&
                   message.parts.filter((part) => part.type === 'source-url')
                     .length > 0 && (
@@ -122,40 +147,40 @@ const ChatBotDemo = () => {
                     </Sources>
                   )}
                 {message.parts.map((part, i) => {
-                  switch (part.type) {
-                    case 'text':
-                      return (
-                        <Fragment key={`${message.id}-${i}`}>
-                          <Message from={message.role}>
-                            <MessageContent>
-                              <MessageResponse>{part.text}</MessageResponse>
-                            </MessageContent>
-                          </Message>
-                          {message.role === 'assistant' &&
-                            i === messages.length - 1 && (
-                              <MessageActions className="mt-2">
-                                <MessageAction
-                                  onClick={() => regenerate()}
-                                  label="Retry"
-                                >
-                                  <RefreshCcwIcon className="size-3" />
-                                </MessageAction>
-                                <MessageAction
-                                  onClick={() =>
-                                    navigator.clipboard.writeText(part.text)
-                                  }
-                                  label="Copy"
-                                >
-                                  <CopyIcon className="size-3" />
-                                </MessageAction>
-                              </MessageActions>
-                            )}
-                        </Fragment>
-                      )
-                    case 'reasoning':
-                      return (
+                  if (part.type === 'text') {
+                    return (
+                      <Fragment key={`${message.id}-${i}`}>
+                        <Message from={message.role}>
+                          <MessageContent>
+                            <MessageResponse>{part.text}</MessageResponse>
+                          </MessageContent>
+                        </Message>
+                        {message.role === 'assistant' &&
+                          i === messages.length - 1 && (
+                            <MessageActions className="mt-2">
+                              <MessageAction
+                                onClick={() => regenerate()}
+                                label="Retry"
+                              >
+                                <RefreshCcwIcon className="size-3" />
+                              </MessageAction>
+                              <MessageAction
+                                onClick={() =>
+                                  navigator.clipboard.writeText(part.text)
+                                }
+                                label="Copy"
+                              >
+                                <CopyIcon className="size-3" />
+                              </MessageAction>
+                            </MessageActions>
+                          )}
+                      </Fragment>
+                    )
+                  }
+                  if (part.type === 'reasoning') {
+                    return (
+                      <Fragment key={`${message.id}-${i}`}>
                         <Reasoning
-                          key={`${message.id}-${i}`}
                           className="w-full"
                           isStreaming={
                             status === 'streaming' &&
@@ -166,10 +191,10 @@ const ChatBotDemo = () => {
                           <ReasoningTrigger />
                           <ReasoningContent>{part.text}</ReasoningContent>
                         </Reasoning>
-                      )
-                    default:
-                      return null
+                      </Fragment>
+                    )
                   }
+                  return null
                 })}
               </div>
             ))}
