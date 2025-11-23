@@ -53,6 +53,7 @@ import {
 } from '@/components/ai-elements/reasoning'
 import { Loader } from '@/components/ai-elements/loader'
 import { DefaultChatTransport } from 'ai'
+import { TypewriterEffectSmooth } from '@/components/ui/typewriter-effect'
 
 const models = [
   {
@@ -62,6 +63,25 @@ const models = [
   {
     name: 'Qwen3 Max',
     value: 'qwen3-max',
+  },
+]
+
+const words = [
+  {
+    text: `Let's`,
+  },
+  {
+    text: 'chat',
+  },
+  {
+    text: 'with',
+  },
+  {
+    text: 'SuperAI',
+    className: 'text-blue-500',
+  },
+  {
+    text: 'together.',
   },
 ]
 
@@ -102,108 +122,116 @@ const ChatBotDemo = () => {
     <PromptInputProvider>
       <div className="max-w-4xl mx-auto p-6 relative size-full h-[calc(100vh-5rem)]">
         <div className="flex flex-col h-full">
-          <Conversation className="h-full overflow-y-hidden">
-            <ConversationContent>
-              {messages.map((message) => (
-                <div key={message.id}>
-                  {message.role === 'user' &&
-                    message.parts.filter((part) => part.type === 'file')
-                      .length > 0 && (
-                      <MessageAttachments className="mb-2">
-                        {message.parts.map((part, i) => {
-                          if (
-                            part.type === 'file' &&
-                            part.mediaType.startsWith('image/')
-                          ) {
-                            return (
-                              <Fragment key={`${message.id}-${i}`}>
-                                <MessageAttachment data={part} />
-                              </Fragment>
-                            )
-                          }
-                        })}
-                      </MessageAttachments>
-                    )}
-                  {message.role === 'assistant' &&
-                    message.parts.filter((part) => part.type === 'source-url')
-                      .length > 0 && (
-                      <Sources>
-                        <SourcesTrigger
-                          count={
-                            message.parts.filter(
-                              (part) => part.type === 'source-url'
-                            ).length
-                          }
-                        />
-                        {message.parts
-                          .filter((part) => part.type === 'source-url')
-                          .map((part, i) => (
-                            <SourcesContent key={`${message.id}-${i}`}>
-                              <Source
-                                key={`${message.id}-${i}`}
-                                href={part.url}
-                                title={part.url}
-                              />
-                            </SourcesContent>
-                          ))}
-                      </Sources>
-                    )}
-                  {message.parts.map((part, i) => {
-                    if (part.type === 'text') {
-                      return (
-                        <Fragment key={`${message.id}-${i}`}>
-                          <Message from={message.role}>
-                            <MessageContent>
-                              <MessageResponse>{part.text}</MessageResponse>
-                            </MessageContent>
-                          </Message>
-                          {message.role === 'assistant' &&
-                            i === messages.length - 1 && (
-                              <MessageActions className="mt-2">
-                                <MessageAction
-                                  onClick={() => regenerate()}
-                                  label="Retry"
-                                >
-                                  <RefreshCcwIcon className="size-3" />
-                                </MessageAction>
-                                <MessageAction
-                                  onClick={() =>
-                                    navigator.clipboard.writeText(part.text)
-                                  }
-                                  label="Copy"
-                                >
-                                  <CopyIcon className="size-3" />
-                                </MessageAction>
-                              </MessageActions>
-                            )}
-                        </Fragment>
-                      )
-                    }
-                    if (part.type === 'reasoning') {
-                      return (
-                        <Fragment key={`${message.id}-${i}`}>
-                          <Reasoning
-                            className="w-full"
-                            isStreaming={
-                              status === 'streaming' &&
-                              i === message.parts.length - 1 &&
-                              message.id === messages.at(-1)?.id
+          {!messages.length && (
+            <div className="h-full flex justify-center items-center">
+              <TypewriterEffectSmooth words={words} />
+            </div>
+          )}
+
+          {!!messages.length && (
+            <Conversation className="h-full overflow-y-hidden">
+              <ConversationContent>
+                {messages.map((message) => (
+                  <div key={message.id}>
+                    {message.role === 'user' &&
+                      message.parts.filter((part) => part.type === 'file')
+                        .length > 0 && (
+                        <MessageAttachments className="mb-2">
+                          {message.parts.map((part, i) => {
+                            if (
+                              part.type === 'file' &&
+                              part.mediaType.startsWith('image/')
+                            ) {
+                              return (
+                                <Fragment key={`${message.id}-${i}`}>
+                                  <MessageAttachment data={part} />
+                                </Fragment>
+                              )
                             }
-                          >
-                            <ReasoningTrigger />
-                            <ReasoningContent>{part.text}</ReasoningContent>
-                          </Reasoning>
-                        </Fragment>
-                      )
-                    }
-                    return null
-                  })}
-                </div>
-              ))}
-              {status === 'submitted' && <Loader />}
-            </ConversationContent>
-            <ConversationScrollButton />
-          </Conversation>
+                          })}
+                        </MessageAttachments>
+                      )}
+                    {message.role === 'assistant' &&
+                      message.parts.filter((part) => part.type === 'source-url')
+                        .length > 0 && (
+                        <Sources>
+                          <SourcesTrigger
+                            count={
+                              message.parts.filter(
+                                (part) => part.type === 'source-url'
+                              ).length
+                            }
+                          />
+                          {message.parts
+                            .filter((part) => part.type === 'source-url')
+                            .map((part, i) => (
+                              <SourcesContent key={`${message.id}-${i}`}>
+                                <Source
+                                  key={`${message.id}-${i}`}
+                                  href={part.url}
+                                  title={part.url}
+                                />
+                              </SourcesContent>
+                            ))}
+                        </Sources>
+                      )}
+                    {message.parts.map((part, i) => {
+                      if (part.type === 'text') {
+                        return (
+                          <Fragment key={`${message.id}-${i}`}>
+                            <Message from={message.role}>
+                              <MessageContent>
+                                <MessageResponse>{part.text}</MessageResponse>
+                              </MessageContent>
+                            </Message>
+                            {message.role === 'assistant' &&
+                              i === messages.length - 1 && (
+                                <MessageActions className="mt-2">
+                                  <MessageAction
+                                    onClick={() => regenerate()}
+                                    label="Retry"
+                                  >
+                                    <RefreshCcwIcon className="size-3" />
+                                  </MessageAction>
+                                  <MessageAction
+                                    onClick={() =>
+                                      navigator.clipboard.writeText(part.text)
+                                    }
+                                    label="Copy"
+                                  >
+                                    <CopyIcon className="size-3" />
+                                  </MessageAction>
+                                </MessageActions>
+                              )}
+                          </Fragment>
+                        )
+                      }
+                      if (part.type === 'reasoning') {
+                        return (
+                          <Fragment key={`${message.id}-${i}`}>
+                            <Reasoning
+                              className="w-full"
+                              isStreaming={
+                                status === 'streaming' &&
+                                i === message.parts.length - 1 &&
+                                message.id === messages.at(-1)?.id
+                              }
+                            >
+                              <ReasoningTrigger />
+                              <ReasoningContent>{part.text}</ReasoningContent>
+                            </Reasoning>
+                          </Fragment>
+                        )
+                      }
+                      return null
+                    })}
+                  </div>
+                ))}
+                {status === 'submitted' && <Loader />}
+              </ConversationContent>
+              <ConversationScrollButton />
+            </Conversation>
+          )}
 
           <PromptInput
             onSubmit={handleSubmit}
