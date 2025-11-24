@@ -7,7 +7,7 @@ import { KnowledgeBase } from '@/types'
 import { RefreshCcw } from 'lucide-react'
 import React from 'react'
 
-export default function RefreshResourceButton({
+export default function RefreshButton({
   onRefreshSuccess,
 }: {
   onRefreshSuccess: (knowledgeBases: KnowledgeBase[]) => void

@@ -2,11 +2,11 @@
 
 import * as React from 'react'
 import {
+  Book,
   BookOpen,
   Bot,
   Command,
   Frame,
-  LayoutDashboard,
   LifeBuoy,
   Map,
   MessagesSquare,
@@ -39,9 +39,9 @@ const data = {
   },
   navMain: [
     {
-      title: 'Dashboard',
-      url: '/dashboard',
-      icon: LayoutDashboard,
+      title: UIText.KnowledgeBase,
+      url: '/knowledge-base',
+      icon: Book,
     },
     {
       title: 'Playground',

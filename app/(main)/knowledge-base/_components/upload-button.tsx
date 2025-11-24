@@ -1,6 +1,6 @@
 'use client'
 
-import { updateKnowledgeBase } from '@/api/knowledge-base'
+import { uploadFile } from '@/api/knowledge-base'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -13,31 +13,30 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Spinner } from '@/components/ui/spinner'
-import { Textarea } from '@/components/ui/textarea'
-import { KnowledgeBase } from '@/types'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { SquarePen } from 'lucide-react'
+import { Upload } from 'lucide-react'
 import React from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import z from 'zod'
+import mime from 'mime'
+import { UIText } from '@/types'
 
 const schema = z.object({
-  name: z.string().min(1),
-  content: z.string().min(1),
+  fileList: z.array(z.instanceof(File)).min(1),
 })
+const acceptExtensions = ['txt', 'pdf', 'doc', 'docx', 'png', 'jpg', 'jpeg']
+const acceptMessage = `Please upload: ${acceptExtensions.join(', ')}`
 
-export default function EditResourceButton({
-  knowledgeBase,
-  onEditSuccess,
+export default function UploadButton({
+  onUploadSuccess,
 }: {
-  knowledgeBase: KnowledgeBase
-  onEditSuccess: () => void
+  onUploadSuccess: () => void
 }) {
   const [isOpen, setIsOpen] = React.useState(false)
   const [isLoading, setIsLoading] = React.useState(false)
+  const fileRef = React.useRef<HTMLInputElement>(null)
   const {
     control,
     handleSubmit,
@@ -45,28 +44,21 @@ export default function EditResourceButton({
     reset,
   } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
-    mode: 'all',
     defaultValues: {
-      name: knowledgeBase.name || '',
-      content: knowledgeBase.content || '',
+      fileList: [],
     },
+    mode: 'all',
   })
 
   async function onSubmit(values: z.infer<typeof schema>) {
     try {
-      if (!knowledgeBase.id) return
-
       setIsLoading(true)
 
-      await updateKnowledgeBase({
-        id: knowledgeBase.id,
-        name: values.name,
-        content: values.content,
-      })
+      await uploadFile(values.fileList)
 
       setIsOpen(false)
-      onEditSuccess()
-      toast.success('Resource updated!')
+      onUploadSuccess()
+      toast.success('Uploaded Successfully')
     } catch {
     } finally {
       setIsLoading(false)
@@ -80,38 +72,48 @@ export default function EditResourceButton({
         setIsOpen(open)
         if (open) {
           reset()
+          if (fileRef.current) {
+            fileRef.current.value = ''
+          }
         }
       }}
     >
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon">
-          <SquarePen />
+        <Button>
+          <Upload /> Upload
         </Button>
       </DialogTrigger>
       <DialogContent>
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
-            <DialogTitle>Edit Resource</DialogTitle>
+            <DialogTitle>Upload {UIText.KnowledgeBase}</DialogTitle>
             <DialogDescription></DialogDescription>
           </DialogHeader>
           <div className="py-4 grid gap-4">
             <div className="grid gap-3">
-              <Label htmlFor="name">Name</Label>
               <Controller
                 control={control}
-                name="name"
+                name="fileList"
                 render={({ field }) => (
-                  <Input {...field} id="name" autoComplete="off" />
-                )}
-              />
-            </div>
-            <div className="grid gap-3">
-              <Label htmlFor="content">Content</Label>
-              <Controller
-                control={control}
-                name="content"
-                render={({ field }) => (
-                  <Textarea {...field} id="content" className="h-60" />
+                  <Input
+                    ref={fileRef}
+                    type="file"
+                    onChange={(e) => {
+                      if (e.target.files?.length) {
+                        const file = e.target.files[0]
+                        const extension =
+                          mime.getExtension(mime.getType(file.name) || '') || ''
+
+                        if (acceptExtensions.indexOf(extension) === -1) {
+                          toast.warning(acceptMessage)
+                          e.target.value = ''
+                          field.onChange([])
+                          return
+                        }
+                        field.onChange([file])
+                      }
+                    }}
+                  />
                 )}
               />
             </div>

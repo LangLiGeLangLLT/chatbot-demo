@@ -8,7 +8,7 @@ import { Trash } from 'lucide-react'
 import React from 'react'
 import { toast } from 'sonner'
 
-export default function DeleteResourceButton({
+export default function DeleteButton({
   knowledgeBase,
   onDeleteSuccess,
 }: {
@@ -26,7 +26,7 @@ export default function DeleteResourceButton({
       await deleteKnowledgeBase({ knowledgeBaseId: knowledgeBase.id })
 
       onDeleteSuccess()
-      toast.success('Resource deleted!')
+      toast.success('Deleted Successfully')
     } catch {
     } finally {
       setIsLoading(false)

@@ -22,16 +22,17 @@ import z from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Spinner } from '@/components/ui/spinner'
 import { createKnowledgeBase } from '@/api/knowledge-base'
+import { UIText } from '@/types'
 
 const schema = z.object({
   name: z.string().min(1),
   content: z.string().min(1),
 })
 
-export default function AddResourceButton({
-  onAddSuccess,
+export default function CreateButton({
+  onCreateSuccess,
 }: {
-  onAddSuccess: () => void
+  onCreateSuccess: () => void
 }) {
   const [isOpen, setIsOpen] = React.useState(false)
   const [isLoading, setIsLoading] = React.useState(false)
@@ -59,8 +60,8 @@ export default function AddResourceButton({
       })
 
       setIsOpen(false)
-      onAddSuccess()
-      toast.success('Resource added!')
+      onCreateSuccess()
+      toast.success('Created Successfully')
     } catch {
     } finally {
       setIsLoading(false)
@@ -79,13 +80,13 @@ export default function AddResourceButton({
     >
       <DialogTrigger asChild>
         <Button>
-          <Plus /> Add Resource
+          <Plus /> Create
         </Button>
       </DialogTrigger>
       <DialogContent>
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
-            <DialogTitle>Add Resource</DialogTitle>
+            <DialogTitle>Create {UIText.KnowledgeBase}</DialogTitle>
             <DialogDescription></DialogDescription>
           </DialogHeader>
           <div className="py-4 grid gap-4">

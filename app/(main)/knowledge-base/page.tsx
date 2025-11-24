@@ -11,11 +11,11 @@ import {
 import { KnowledgeBase } from '@/types'
 import { loadKnowledgeBases } from '@/api/knowledge-base'
 import { Empty, EmptyTitle } from '@/components/ui/empty'
-import AddResourceButton from './_components/add-resource-button'
-import EditResourceButton from './_components/edit-resource-button'
-import UploadResourceButton from './_components/upload-resource-button'
-import DeleteResourceButton from './_components/delete-resource-button'
-import RefreshResourceButton from './_components/refresh-resource-button'
+import CreateButton from './_components/create-button'
+import EditButton from './_components/edit-button'
+import UploadButton from './_components/upload-button'
+import DeleteButton from './_components/delete-button'
+import RefreshButton from './_components/refresh-button'
 
 export default function Page() {
   const [knowledgeBases, setKnowledgeBases] = React.useState<KnowledgeBase[]>()
@@ -43,9 +43,9 @@ export default function Page() {
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
       <div className="flex gap-4">
-        <RefreshResourceButton onRefreshSuccess={onRefresh} />
-        <AddResourceButton onAddSuccess={init} />
-        <UploadResourceButton onUploadSuccess={init} />
+        <RefreshButton onRefreshSuccess={onRefresh} />
+        <CreateButton onCreateSuccess={init} />
+        <UploadButton onUploadSuccess={init} />
       </div>
       <div className="flex-1 flex flex-col">
         {isLoading ? (
@@ -53,7 +53,7 @@ export default function Page() {
         ) : !knowledgeBases?.length ? (
           <div className="flex-1 flex justify-center items-center">
             <Empty>
-              <EmptyTitle>No Resources Found</EmptyTitle>
+              <EmptyTitle>No Knowledge Bases Found</EmptyTitle>
             </Empty>
           </div>
         ) : (
@@ -67,11 +67,11 @@ export default function Page() {
                   </CardDescription>
                 </CardHeader>
                 <CardFooter className="justify-end">
-                  <EditResourceButton
+                  <EditButton
                     knowledgeBase={knowledgeBase}
                     onEditSuccess={init}
                   />
-                  <DeleteResourceButton
+                  <DeleteButton
                     knowledgeBase={knowledgeBase}
                     onDeleteSuccess={init}
                   />
