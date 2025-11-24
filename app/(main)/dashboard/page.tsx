@@ -1,7 +1,6 @@
 'use client'
 
 import React from 'react'
-import { Button } from '@/components/ui/button'
 import {
   Card,
   CardDescription,
@@ -9,19 +8,21 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { RefreshCcw, Trash } from 'lucide-react'
-import AddResourceButton from './_components/add-resource-button'
 import { KnowledgeBase } from '@/types'
 import { loadKnowledgeBases } from '@/api/knowledge-base'
 import { Empty, EmptyTitle } from '@/components/ui/empty'
+import AddResourceButton from './_components/add-resource-button'
 import EditResourceButton from './_components/edit-resource-button'
+import UploadResourceButton from './_components/upload-resource-button'
+import DeleteResourceButton from './_components/delete-resource-button'
+import RefreshResourceButton from './_components/refresh-resource-button'
 
 export default function Page() {
   const [knowledgeBases, setKnowledgeBases] = React.useState<KnowledgeBase[]>()
   const [isLoading, setIsLoading] = React.useState(true)
 
-  function onRefresh() {
-    init()
+  function onRefresh(knowledgeBases: KnowledgeBase[]) {
+    setKnowledgeBases(knowledgeBases)
   }
 
   async function init() {
@@ -42,10 +43,9 @@ export default function Page() {
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
       <div className="flex gap-4">
-        <Button onClick={onRefresh}>
-          <RefreshCcw /> Refresh
-        </Button>
-        <AddResourceButton />
+        <RefreshResourceButton onRefreshSuccess={onRefresh} />
+        <AddResourceButton onAddSuccess={init} />
+        <UploadResourceButton onUploadSuccess={init} />
       </div>
       <div className="flex-1 flex flex-col">
         {isLoading ? (
@@ -61,16 +61,20 @@ export default function Page() {
             {knowledgeBases?.map((knowledgeBase) => (
               <Card key={knowledgeBase.id} className="gap-2 pb-2">
                 <CardHeader>
-                  <CardTitle>{knowledgeBase.title}</CardTitle>
+                  <CardTitle>{knowledgeBase.name}</CardTitle>
                   <CardDescription className="truncate">
-                    {knowledgeBase.description}
+                    {knowledgeBase.content}
                   </CardDescription>
                 </CardHeader>
                 <CardFooter className="justify-end">
-                  <EditResourceButton />
-                  <Button variant="ghost" size="icon">
-                    <Trash />
-                  </Button>
+                  <EditResourceButton
+                    knowledgeBase={knowledgeBase}
+                    onEditSuccess={init}
+                  />
+                  <DeleteResourceButton
+                    knowledgeBase={knowledgeBase}
+                    onDeleteSuccess={init}
+                  />
                 </CardFooter>
               </Card>
             ))}

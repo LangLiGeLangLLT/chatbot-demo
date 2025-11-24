@@ -16,20 +16,67 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Plus } from 'lucide-react'
 import React from 'react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import z from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Spinner } from '@/components/ui/spinner'
+import { createKnowledgeBase } from '@/api/knowledge-base'
 
-export default function AddResourceButton() {
+const schema = z.object({
+  name: z.string().min(1),
+  content: z.string().min(1),
+})
+
+export default function AddResourceButton({
+  onAddSuccess,
+}: {
+  onAddSuccess: () => void
+}) {
   const [isOpen, setIsOpen] = React.useState(false)
-  const { handleSubmit } = useForm()
+  const [isLoading, setIsLoading] = React.useState(false)
+  const {
+    control,
+    handleSubmit,
+    formState: { isValid },
+    reset,
+  } = useForm<z.infer<typeof schema>>({
+    resolver: zodResolver(schema),
+    mode: 'all',
+    defaultValues: {
+      name: '',
+      content: '',
+    },
+  })
 
-  function onSubmit() {
-    setIsOpen(false)
-    toast.success('Resource added!')
+  async function onSubmit(values: z.infer<typeof schema>) {
+    try {
+      setIsLoading(true)
+
+      await createKnowledgeBase({
+        name: values.name,
+        content: values.content,
+      })
+
+      setIsOpen(false)
+      onAddSuccess()
+      toast.success('Resource added!')
+    } catch {
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        setIsOpen(open)
+        if (open) {
+          reset()
+        }
+      }}
+    >
       <DialogTrigger asChild>
         <Button>
           <Plus /> Add Resource
@@ -44,18 +91,33 @@ export default function AddResourceButton() {
           <div className="py-4 grid gap-4">
             <div className="grid gap-3">
               <Label htmlFor="name">Name</Label>
-              <Input id="name" autoComplete="off" />
+              <Controller
+                control={control}
+                name="name"
+                render={({ field }) => (
+                  <Input {...field} id="name" autoComplete="off" />
+                )}
+              />
             </div>
             <div className="grid gap-3">
               <Label htmlFor="content">Content</Label>
-              <Textarea id="content" className="h-60" />
+              <Controller
+                control={control}
+                name="content"
+                render={({ field }) => (
+                  <Textarea {...field} id="content" className="h-60" />
+                )}
+              />
             </div>
           </div>
           <DialogFooter>
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button type="submit">Submit</Button>
+            <Button type="submit" disabled={isLoading || !isValid}>
+              {isLoading && <Spinner />}
+              Submit
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
