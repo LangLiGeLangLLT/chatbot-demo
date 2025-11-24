@@ -19,7 +19,7 @@ import React from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
-export default function AddResource() {
+export default function AddResourceButton() {
   const [isOpen, setIsOpen] = React.useState(false)
   const { handleSubmit } = useForm()
 
@@ -39,9 +39,7 @@ export default function AddResource() {
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
             <DialogTitle>Add Resource</DialogTitle>
-            <DialogDescription>
-              This is where the form to add a new resource would go
-            </DialogDescription>
+            <DialogDescription></DialogDescription>
           </DialogHeader>
           <div className="py-4 grid gap-4">
             <div className="grid gap-3">
@@ -50,7 +48,7 @@ export default function AddResource() {
             </div>
             <div className="grid gap-3">
               <Label htmlFor="content">Content</Label>
-              <Textarea id="content" />
+              <Textarea id="content" className="h-60" />
             </div>
           </div>
           <DialogFooter>
