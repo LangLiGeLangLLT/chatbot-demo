@@ -239,7 +239,11 @@ const ChatBotDemo = () => {
                     })}
                   </div>
                 ))}
-                {status === 'submitted' && <Loader />}
+                {status === 'submitted' && (
+                  <div className="h-6 flex justify-center items-center">
+                    <Loader />
+                  </div>
+                )}
               </ConversationContent>
               <ConversationScrollButton />
             </Conversation>
