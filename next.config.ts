@@ -19,20 +19,6 @@ const nextConfig: NextConfig = {
       },
     ]
   },
-  async headers() {
-    return [
-      {
-        source: '/api/:path*',
-        headers: [
-          {
-            key: 'ngrok-skip-browser-warning',
-            value: 'true',
-          },
-        ],
-        basePath: false,
-      },
-    ]
-  },
 }
 
 export default nextConfig

@@ -4,11 +4,14 @@ import {
   convertToModelMessages,
   createUIMessageStreamResponse,
   createUIMessageStream,
+  tool,
+  stepCountIs,
 } from 'ai'
 import { qwen } from '@/lib/ai/qwen'
 import { experimental_createMCPClient as createMCPClient } from '@ai-sdk/mcp'
 import prompt from './prompt.md'
 import z from 'zod'
+import { retrieve } from '@/lib/actions/retrieve'
 
 export const maxDuration = 30
 
@@ -25,8 +28,6 @@ export async function POST(req: Request) {
 
   try {
     return createUIMessageStreamResponse({
-      status: 200,
-      statusText: 'OK',
       stream: createUIMessageStream({
         async execute({ writer }) {
           const modelMessages = convertToModelMessages(messages)
@@ -62,6 +63,8 @@ export async function POST(req: Request) {
               model: qwen(model),
               messages: modelMessages,
               tools: sseClientTools,
+              toolChoice: 'required',
+              stopWhen: stepCountIs(5),
               onFinish: async () => {
                 await sseClient.close()
               },
@@ -76,9 +79,17 @@ export async function POST(req: Request) {
           const result = streamText({
             model: qwen(model),
             messages: modelMessages,
-            // system: prompt,
-            system: `You are a helpful assistant that can answer questions and help with tasks`,
-            tools: {},
+            system: prompt,
+            stopWhen: stepCountIs(5),
+            tools: {
+              retrieve: tool({
+                description: `get information from your knowledge base to answer questions.`,
+                inputSchema: z.object({
+                  query: z.string().describe(`the users query`),
+                }),
+                execute: async ({ query }) => retrieve(query),
+              }),
+            },
           })
           writer.merge(
             result.toUIMessageStream({
@@ -91,8 +102,6 @@ export async function POST(req: Request) {
     })
   } catch {
     return createUIMessageStreamResponse({
-      status: 200,
-      statusText: 'OK',
       stream: createUIMessageStream({
         execute({ writer }) {
           const result = streamText({
