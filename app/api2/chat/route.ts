@@ -63,8 +63,6 @@ export async function POST(req: Request) {
               model: qwen(model),
               messages: modelMessages,
               tools: sseClientTools,
-              toolChoice: 'required',
-              stopWhen: stepCountIs(5),
               onFinish: async () => {
                 await sseClient.close()
               },
