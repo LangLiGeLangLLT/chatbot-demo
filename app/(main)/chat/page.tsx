@@ -59,7 +59,7 @@ import { UIText } from '@/types'
 const models = [
   {
     name: 'DeepSeek R1',
-    value: 'deepseek-r1',
+    value: 'deepseek-r1-0528',
   },
   {
     name: 'Qwen3 Omni Flash',
