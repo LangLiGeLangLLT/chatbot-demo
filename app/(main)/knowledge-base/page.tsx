@@ -61,7 +61,9 @@ export default function Page() {
             {knowledgeBases?.map((knowledgeBase) => (
               <Card key={knowledgeBase.id} className="gap-2 pb-2">
                 <CardHeader>
-                  <CardTitle>{knowledgeBase.name}</CardTitle>
+                  <CardTitle className="truncate">
+                    {knowledgeBase.name}
+                  </CardTitle>
                   <CardDescription className="truncate">
                     {knowledgeBase.content}
                   </CardDescription>
