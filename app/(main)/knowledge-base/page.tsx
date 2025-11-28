@@ -3,6 +3,7 @@
 import React from 'react'
 import {
   Card,
+  CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
@@ -65,26 +66,34 @@ export default function Page() {
               <Card key={knowledgeBase.id} className="gap-2 pb-2">
                 <CardHeader>
                   <CardTitle className="truncate">
-                    {knowledgeBase.name}
+                    {knowledgeBase.title || knowledgeBase.name}
                   </CardTitle>
-                  <CardDescription className="truncate">
-                    {knowledgeBase.content}
-                  </CardDescription>
                 </CardHeader>
-                <CardFooter className="justify-end">
-                  <Link href={`/doc/${knowledgeBase.id}`} target="_blank">
-                    <Button variant="ghost" size="icon">
-                      <Eye />
-                    </Button>
-                  </Link>
-                  <EditButton
-                    knowledgeBase={knowledgeBase}
-                    onEditSuccess={init}
-                  />
-                  <DeleteButton
-                    knowledgeBase={knowledgeBase}
-                    onDeleteSuccess={init}
-                  />
+                <CardContent className="text-sm text-neutral-500 line-clamp-4 font-mono">
+                  {knowledgeBase.content}
+                </CardContent>
+                <CardFooter className="flex flex-col space-y-2">
+                  <div
+                    className="text-xs w-full truncate font-semibold"
+                    title={knowledgeBase.name}
+                  >
+                    Source: {knowledgeBase.name}
+                  </div>
+                  <div className="ml-auto">
+                    <Link href={`/doc/${knowledgeBase.id}`} target="_blank">
+                      <Button variant="ghost" size="icon">
+                        <Eye />
+                      </Button>
+                    </Link>
+                    <EditButton
+                      knowledgeBase={knowledgeBase}
+                      onEditSuccess={init}
+                    />
+                    <DeleteButton
+                      knowledgeBase={knowledgeBase}
+                      onDeleteSuccess={init}
+                    />
+                  </div>
                 </CardFooter>
               </Card>
             ))}
