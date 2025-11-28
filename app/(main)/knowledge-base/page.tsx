@@ -16,6 +16,9 @@ import EditButton from './_components/edit-button'
 import UploadButton from './_components/upload-button'
 import DeleteButton from './_components/delete-button'
 import RefreshButton from './_components/refresh-button'
+import { Button } from '@/components/ui/button'
+import { Eye } from 'lucide-react'
+import Link from 'next/link'
 
 export default function Page() {
   const [knowledgeBases, setKnowledgeBases] = React.useState<KnowledgeBase[]>()
@@ -69,6 +72,11 @@ export default function Page() {
                   </CardDescription>
                 </CardHeader>
                 <CardFooter className="justify-end">
+                  <Link href={`/doc/${knowledgeBase.id}`} target="_blank">
+                    <Button variant="ghost" size="icon">
+                      <Eye />
+                    </Button>
+                  </Link>
                   <EditButton
                     knowledgeBase={knowledgeBase}
                     onEditSuccess={init}
