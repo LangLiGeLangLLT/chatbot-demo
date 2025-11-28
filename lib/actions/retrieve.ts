@@ -12,7 +12,6 @@ export async function retrieve(query: string) {
       }),
     })
     const data = res.json()
-    console.log(data)
     return data
   } catch {
     return 'Error, please try again.'
