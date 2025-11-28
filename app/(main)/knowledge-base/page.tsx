@@ -80,7 +80,10 @@ export default function Page() {
                     Source: {knowledgeBase.name}
                   </div>
                   <div className="ml-auto">
-                    <Link href={`/knowledge/${knowledgeBase.id}`} target="_blank">
+                    <Link
+                      href={`/knowledge/${knowledgeBase.id}`}
+                      target="_blank"
+                    >
                       <Button variant="ghost" size="icon">
                         <Eye />
                       </Button>
