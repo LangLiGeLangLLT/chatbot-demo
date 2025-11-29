@@ -15,8 +15,9 @@ import EditButton from './_components/edit-button'
 import DeleteButton from './_components/delete-button'
 import RefreshButton from './_components/refresh-button'
 import { Button } from '@/components/ui/button'
-import { Eye } from 'lucide-react'
+import { BookUp, Eye } from 'lucide-react'
 import Link from 'next/link'
+import { toast } from 'sonner'
 
 export default function Page() {
   const [knowledgeBases, setKnowledgeBases] = React.useState<KnowledgeBase[]>()
@@ -24,6 +25,10 @@ export default function Page() {
 
   function onRefresh(knowledgeBases: KnowledgeBase[]) {
     setKnowledgeBases(knowledgeBases)
+  }
+
+  function onPublish() {
+    toast.success(`Published Successfully`)
   }
 
   async function init() {
@@ -69,6 +74,9 @@ export default function Page() {
                 </CardContent>
                 <CardFooter className="flex flex-col space-y-2">
                   <div className="ml-auto">
+                    <Button variant="ghost" size="icon" onClick={onPublish}>
+                      <BookUp />
+                    </Button>
                     <Link href={`/doc/${knowledgeBase.id}`} target="_blank">
                       <Button variant="ghost" size="icon">
                         <Eye />
